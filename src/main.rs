@@ -6,8 +6,11 @@ type Result<T = (), E = Box<dyn std::error::Error + 'static>> = std::result::Res
 fn main() -> Result {
     let cwd = env::current_dir()?;
     let paths = WalkDir::new(&cwd).into_iter().filter_entry(|entry| {
-        // Should filter out all the "Foo_files" folders but still descend into others.
-        entry.file_type().is_file() || !entry.file_name().to_string_lossy().ends_with("_files")
+        entry
+            .file_name()
+            .to_str()
+            .map(|name| !name.starts_with('.') && !name.ends_with("_files"))
+            .unwrap_or_default()
     });
 
     for entry in paths {
