@@ -1,4 +1,5 @@
 use std::env;
+use std::io::{self, Write};
 use walkdir::WalkDir;
 
 type Result<T = (), E = Box<dyn std::error::Error + 'static>> = std::result::Result<T, E>;
@@ -13,10 +14,13 @@ fn main() -> Result {
             .unwrap_or_default()
     });
 
+    let output = io::stdout();
+    let mut output = output.lock();
+
     for entry in paths {
         let entry = entry?;
         let relative_path = entry.path().strip_prefix(&cwd)?;
-        println!("{}", relative_path.display());
+        writeln!(output, "{}", relative_path.display())?;
     }
 
     Ok(())
