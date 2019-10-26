@@ -19,8 +19,10 @@ fn main() -> Result {
 
     for entry in paths {
         let entry = entry?;
-        let relative_path = entry.path().strip_prefix(&cwd)?;
-        writeln!(output, "{}", relative_path.display())?;
+        if entry.file_type().is_file() {
+            let relative_path = entry.path().strip_prefix(&cwd)?;
+            writeln!(output, "{}", relative_path.display())?;
+        }
     }
 
     Ok(())
